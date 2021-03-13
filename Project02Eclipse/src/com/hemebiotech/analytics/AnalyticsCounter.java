@@ -1,44 +1,64 @@
 package com.hemebiotech.analytics;
-// juste  pour  voir
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class AnalyticsCounter {
-	private static int headacheCount = 0;	// initialize to 0
-	private static int rashCount = 0;		// initialize to 0
-	private static int pupilCount = 0;		// initialize to 0
+	private List<String> listS = new ArrayList<String>();
+	TreeMap<String,Integer> mapTriee = new TreeMap<String,Integer>();
 	
-	public static void main(String args[]) throws Exception {
-		// first get input
-		BufferedReader reader = new BufferedReader (new FileReader("symptoms.txt"));
-		String line = reader.readLine();
-//commentaire pour  un test  de git
-		int i = 0;	// set i to 0
-		int headCount = 0;	// counts headaches
-		while (line != null) {
-			i++;	// increment i
-			System.out.println("symptom from file: " + line);
-			if (line.equals("headache")) {
-				headCount++;
-				System.out.println("number of headaches: " + headCount);
-			}
-			else if (line.equals("rush")) {
-				rashCount++;
-			}
-			else if (line.contains("pupils")) {
-				pupilCount++;
-			}
-
-			line = reader.readLine();	// get another symptom
-		}
-		
-		// next generate output
-		FileWriter writer = new FileWriter ("result.out");
-		writer.write("headache: " + headacheCount + "\n");
-		writer.write("rash: " + rashCount + "\n");
-		writer.write("dialated pupils: " + pupilCount + "\n");
-		writer.close();
+	public AnalyticsCounter() {
+		super();
 	}
+
+	//lire  le ficher er recuperer  les syntoms
+	public void ReadSymptoms()
+	{
+		ReadSymptomDataFromFile rs = new ReadSymptomDataFromFile("symptoms.txt");
+		 listS = rs.GetSymptoms();
+		 for (String symptom : listS) {
+			 System.out.println(symptom);
+			
+		}
+	}
+	
+	public void SortSymptoms()
+	{		 
+		 for (String symptom : listS) {
+			if(mapTriee.containsKey(symptom))
+			{
+				int value = mapTriee.get(symptom) + 1;
+				mapTriee.put(symptom, value);
+			}
+			else
+			{
+				mapTriee.put(symptom, 1);
+			}
+		}
+	}
+	
+	public void WriteSymptoms()
+	{
+		FileWriter fw;
+		try {
+			fw = new FileWriter("result.out");
+			for (Map.Entry<String ,Integer> entry : mapTriee.entrySet()) {
+				System.out.println( entry.getKey() +" : " + entry.getValue() );
+				 fw.write(entry.getKey() +" : " + entry.getValue() + "\n");																	
+				 }
+			fw.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+
+	
 }
+	
+		
